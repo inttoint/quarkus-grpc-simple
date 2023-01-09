@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "ru.sandbox.quarkus.proto";
+option java_outer_classname = "VisitorServiceProto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+message Visitor {
+   int64 id = 1;
+   string name = 2;
+   google.protobuf.Timestamp date = 3;
+}
+
+message VisitorList {
+   repeated Visitor all = 1;
+   google.protobuf.Int64Value count = 2;
+}
+
+service VisitorService {
+   rpc create(Visitor) returns (Visitor) {};
+   rpc update(Visitor) returns (Visitor) {};
+   rpc findById(google.protobuf.Int64Value) returns (Visitor) {};
+   rpc findAll(google.protobuf.Empty) returns (VisitorList) {};
+   rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
+}
