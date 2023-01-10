@@ -8,6 +8,8 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
 
+package visitor;
+
 message Visitor {
    int64 id = 1;
    string name = 2;
@@ -15,14 +17,17 @@ message Visitor {
 }
 
 message VisitorList {
-   repeated Visitor all = 1;
+   repeated Visitor visitor = 1;
    google.protobuf.Int64Value count = 2;
 }
 
 service VisitorService {
+
    rpc create(Visitor) returns (Visitor) {};
-   rpc update(Visitor) returns (Visitor) {};
+
    rpc findById(google.protobuf.Int64Value) returns (Visitor) {};
+
    rpc findAll(google.protobuf.Empty) returns (VisitorList) {};
+
    rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
 }
