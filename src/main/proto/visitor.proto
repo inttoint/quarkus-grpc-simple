@@ -17,8 +17,8 @@ message Visitor {
 }
 
 message VisitorList {
-   repeated Visitor visitor = 1;
-   google.protobuf.Int64Value count = 2;
+   repeated Visitor visitors = 1;
+   int64 count = 2;
 }
 
 service VisitorService {
@@ -28,6 +28,8 @@ service VisitorService {
    rpc findById(google.protobuf.Int64Value) returns (Visitor) {};
 
    rpc findAll(google.protobuf.Empty) returns (VisitorList) {};
+
+   rpc streamAll(google.protobuf.Int32Value) returns (stream VisitorList) {};
 
    rpc delete(google.protobuf.Int64Value) returns (google.protobuf.BoolValue) {};
 }

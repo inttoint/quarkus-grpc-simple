@@ -2,13 +2,16 @@ package ru.sandbox.quarkus;
 
 import com.google.protobuf.BoolValue;
 import com.google.protobuf.Empty;
+import com.google.protobuf.Int32Value;
 import com.google.protobuf.Int64Value;
 import io.quarkus.grpc.GrpcService;
+import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import ru.sandbox.quarkus.proto.Visitor;
 import ru.sandbox.quarkus.proto.VisitorList;
 import ru.sandbox.quarkus.proto.VisitorService;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,7 @@ public class VisitorGrpcService implements VisitorService {
 
     @Override
     public Uni<VisitorList> findAll(Empty request) {
-        VisitorList visitorList = VisitorList.newBuilder().addAllVisitor(VISITORS).build();
+        VisitorList visitorList = VisitorList.newBuilder().addAllVisitors(VISITORS).setCount(VISITORS.size()).build();
         return Uni.createFrom().item(visitorList);
     }
 
@@ -49,5 +52,16 @@ public class VisitorGrpcService implements VisitorService {
                 .findFirst()
                 .map(VISITORS::remove).orElse(false);
         return Uni.createFrom().item(BoolValue.of(success));
+    }
+
+    @Override
+    public Multi<VisitorList> streamAll(Int32Value count) {
+        return Multi.createFrom()
+                .ticks().every(Duration.ofSeconds(1))
+                .select()
+                .first(count.getValue())
+                .map(tick -> (tick.intValue() >= VISITORS.size())
+                        ? VisitorList.newBuilder().setCount(0L).build()
+                        : VisitorList.newBuilder().addAllVisitors(VISITORS.subList(tick.intValue(), tick.intValue() + 1)).setCount(1L).build());
     }
 }
